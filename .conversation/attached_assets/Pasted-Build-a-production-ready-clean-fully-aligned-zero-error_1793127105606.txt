@@ -1,0 +1,57 @@
+Build a production-ready, clean, fully aligned, zero-error Campus Tag Lost & Found application.
+
+App Name: Campus Tag
+Tagline: Scan It to Find It
+
+STRICT REQUIREMENTS (must follow 100%):
+
+1. DESIGN & UI RULES (Zero tolerance for misalignment)
+- Perfect visual alignment on every screen
+- Consistent spacing, padding, and margins (8px / 16px / 24px system)
+- Clean modern university-style UI (primary color: professional blue #1E88E5, white, light gray)
+- Fully responsive – perfect on mobile, tablet, and desktop
+- No overlapping elements, no text cut-off, no uneven gaps
+- Beautiful empty states, loading skeletons, and success/error toasts
+- Smooth transitions and professional typography
+- High visual hierarchy and excellent readability
+
+2. CORE FUNCTIONALITY (Must work perfectly)
+- Owner Authentication (Email + Password + Google Sign-in)
+- Register Item: name, description, category (Bottle, Bag, Keys, Wallet, Electronics, Other), photo upload
+- Auto-generate unique QR code for every item
+- My Items list with clear status badges: Active / Lost / Recovered
+- Item Detail page with:
+  - Large QR code (download + print ready)
+  - Toggle Lost Mode
+  - Last Reported Location map
+  - Messages section
+- Finder public page (opened by scanning QR):
+  - Clean mobile-first design
+  - Item photo + name
+  - Message input + optional “Share current location”
+  - Submit button that works instantly
+- When finder submits:
+  - Owner receives email notification
+  - In-app notification + message saved
+  - Last Reported Location updates (if location shared) with timestamp and source
+- Owner can manually add “Last seen at...” location
+- When item is Recovered → QR still works but shows clear “This item has been recovered” message
+- Complete privacy: Finder never sees owner’s phone number or email
+
+3. TECHNICAL RULES
+- Use persistent database (Firebase Auth + Firestore preferred)
+- Efficient data structure (minimal reads/writes)
+- Proper error handling on every form and action
+- Loading states for all network actions
+- Secure and scalable architecture
+- No live GPS tracking – only Last Reported / Last Verified Location
+
+4. QUALITY STANDARD
+- Zero bugs
+- Zero misaligned elements
+- Zero broken flows
+- Every button, form, map, and QR must work correctly
+- Clean code structure
+- Ready for real university use
+
+Generate a complete, polished, fully functional mobile-first application with beautiful UI, perfect alignment, and all features working without any errors.
