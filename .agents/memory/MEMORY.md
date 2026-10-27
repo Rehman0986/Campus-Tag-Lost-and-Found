@@ -1,0 +1,1 @@
+- [Vite dependency optimizer cache](vite-optimizer-cache.md) — When React versions mismatch after package updates, check stale Vite output before changing versions again.
