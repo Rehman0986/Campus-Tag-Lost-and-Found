@@ -1,0 +1,177 @@
+# Task: Integrate Existing Vite Frontend with Django Backend
+
+Act as a Senior Full-Stack Architect and Python Django REST Framework Engineer.
+
+The architecture investigation has confirmed the following:
+
+- Vite frontend currently uses `src/mock/storage.ts`.
+- Admin authentication uses browser localStorage through `db.getUsers()`.
+- `DEFAULT_USERS` provides mock users.
+- `AdminAuthModal` checks for the `super_admin` role locally.
+- Dashboard data is currently based on mock storage.
+- The Django backend has JWT authentication endpoints and admin user routes.
+- The frontend does not currently communicate with the Django backend.
+- There is no configured frontend API base URL.
+
+## Main Objective
+
+Integrate the existing Vite frontend with the existing Django backend so the complete application uses real backend APIs and database records instead of mock authentication and mock dashboard data.
+
+## Phase 1: Backend API Audit
+
+Inspect the existing Django backend and identify:
+
+- Login and JWT token endpoints.
+- Token refresh endpoint.
+- Current-user/profile endpoint.
+- Admin authentication and permission classes.
+- Admin user management APIs.
+- Dashboard statistics APIs, if available.
+- All existing admin module APIs.
+- Database models and relationships.
+
+Do not create duplicate APIs if equivalent endpoints already exist.
+
+## Phase 2: Frontend API Integration
+
+Create a centralized API service layer.
+
+Configure the backend URL through a Vite environment variable:
+
+VITE_API_BASE_URL
+
+Use the correct existing backend URL and port.
+
+Implement:
+
+- Centralized API client.
+- JWT access token handling.
+- Refresh token handling.
+- Authorization headers.
+- API error handling.
+- Loading states.
+- Session expiration handling.
+
+Use the frontend's existing framework and conventions.
+
+## Phase 3: Replace Mock Authentication
+
+Replace the mock authentication workflow with Django JWT authentication.
+
+The new workflow must be:
+
+Admin Login → Django Login API → JWT Tokens → Token Storage → Current User API → Role Verification → Protected Admin Dashboard.
+
+Requirements:
+
+- Authenticate using actual Django users.
+- Verify the user's real role and permissions.
+- Do not trust frontend-only role checks.
+- Do not allow users to access admin routes just by modifying localStorage.
+- Handle expired and invalid tokens.
+- Implement secure logout and token handling.
+- Preserve the existing login UI.
+
+Follow the project's existing security architecture and use secure cookie-based refresh tokens if supported or implement an appropriate documented token strategy.
+
+## Phase 4: Replace Mock Dashboard Data
+
+Identify all dashboard components currently reading data from mock storage.
+
+Connect each component to its corresponding real Django API.
+
+Use real database records for:
+
+- Dashboard statistics.
+- User management.
+- Admin profiles.
+- Reports.
+- Analytics.
+- Settings.
+- Other existing admin modules.
+
+If an API does not exist, report it and implement it only after inspecting the relevant Django models and business logic.
+
+Do not show fake data as real data.
+
+## Phase 5: Replace Mock Storage Carefully
+
+Inspect every use of `src/mock/storage.ts`.
+
+Categorize each usage:
+
+1. Authentication data.
+2. Admin and user records.
+3. Dashboard statistics.
+4. Application business data.
+5. UI-only preferences or temporary state.
+
+Replace server-owned data with API calls.
+
+Keep localStorage only for appropriate client-side preferences or other justified local state.
+
+Do not delete mock storage until all required features have been migrated and tested.
+
+## Phase 6: CORS and Environment Configuration
+
+Configure Django CORS for the actual Vite development origin, normally:
+
+http://localhost:5173
+
+Also support:
+
+http://127.0.0.1:5173
+
+Inspect existing production settings and preserve production compatibility.
+
+Do not allow unrestricted origins in production.
+
+## Phase 7: Complete Application Testing
+
+Test the following workflow:
+
+1. Start Django backend.
+2. Start Vite frontend.
+3. Log in using a real Django admin account.
+4. Verify JWT authentication.
+5. Open the Admin Dashboard.
+6. Verify real database statistics.
+7. Open user management.
+8. Test other admin modules.
+9. Verify protected routes.
+10. Test unauthorized access.
+11. Test expired tokens and refresh.
+12. Test logout.
+13. Verify normal user and public routes.
+
+Check browser console, network requests, Django logs and database responses.
+
+## Important Rules
+
+- Preserve the current frontend UI and design.
+- Do not rewrite the entire application.
+- Do not delete existing features.
+- Do not invent API endpoints or database fields.
+- Do not hardcode admin credentials.
+- Do not use mock data to hide API failures.
+- Do not claim successful integration without testing.
+- Use Windows PowerShell 5.1-compatible terminal commands.
+- Keep production deployment compatibility.
+
+## Final Deliverables
+
+Provide:
+1. Complete API integration.
+2. Real Django authentication.
+3. Real admin dashboard data.
+4. Functional protected admin routes.
+5. Updated environment configuration.
+6. List of modified files.
+7. API endpoint mapping.
+8. Actual test results.
+9. Remaining issues, if any.
+
+The final application must work as one integrated system rather than two separate applications.
+Ek zaroori baat
+Important
+ Abhi DEFAULT_USERS ya src/mock/storage.ts ko directly delete mat karwana. Pehle real Django authentication aur dashboard APIs successfully integrate hon, phir mock system remove karwana.

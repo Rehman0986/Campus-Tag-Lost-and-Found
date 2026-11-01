@@ -1,0 +1,6 @@
+{
+  "name": "Campus Tag",
+  "description": "Scan It to Find It — Production-ready multi-tenant lost and found SaaS platform for universities and campuses with privacy-first QR tags, Leaflet map location reporting, subscription tiers, customer portals, and super admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
