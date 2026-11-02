@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { SubscriptionPlan, WebsiteSettings, Item } from '../types';
 import { db } from '../mock/storage';
 import {
@@ -29,6 +30,7 @@ import {
   Search,
   ExternalLink
 } from 'lucide-react';
+import { staggerContainer, staggerItem, fadeInUp, cardHover, tapPress, accordionContent, ScrollReveal, reducedVariants } from '../components/motion';
 
 interface PublicWebsiteProps {
   settings: WebsiteSettings;
@@ -47,6 +49,9 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
   activePolicy,
   onClosePolicy
 }) => {
+  const reduced = useReducedMotion();
+  const headlineWords = (settings.heroHeadline || 'Protect Your Campus Gear.').split(' ');
+  const taglineWords = (settings.tagline || 'Scan It to Find It').split(' ');
   const [demoInputId, setDemoInputId] = useState('cpt-8f92-a1b4');
   const [contactSubject, setContactSubject] = useState('Campus Department Fleet Inquiry');
   const [contactEmail, setContactEmail] = useState('');
@@ -164,15 +169,15 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[var(--ct-bg-deep)] text-[var(--ct-text-primary)]">
       {/* Announcement Banner if enabled */}
       {settings.announcementBanner?.enabled && (
-        <div className="bg-blue-900 text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2">
+        <div className="bg-blue-950/50 text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2 border-b border-[var(--ct-border-accent)]">
           <span>{settings.announcementBanner.text}</span>
           {settings.announcementBanner.linkUrl && (
             <a
               href={settings.announcementBanner.linkUrl}
-              className="underline text-blue-200 hover:text-white font-semibold cursor-pointer"
+              className="underline text-[var(--ct-accent-hover)] hover:text-white font-semibold cursor-pointer"
             >
               Learn More →
             </a>
@@ -181,33 +186,66 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
       )}
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-slate-900 to-slate-900 text-white pt-24 pb-20 px-6">
+      <section className="relative overflow-hidden bg-[var(--ct-bg-deep)] text-[var(--ct-text-primary)] pt-24 pb-20 px-6">
+      <ScrollReveal once={true}>
         {/* Subtle Background Pattern */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center max-w-3xl mx-auto space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-semibold backdrop-blur-xs">
-              <ShieldCheck className="w-4 h-4 text-blue-400" />
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="text-center max-w-3xl mx-auto space-y-6"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--ct-accent)]/10 border border-[var(--ct-accent)]/30 text-[var(--ct-accent-hover)] text-xs font-semibold backdrop-blur-xs animate-scale-in">
+              <ShieldCheck className="w-4 h-4 text-[var(--ct-accent-hover)]" />
               <span>University-Grade Campus Gear Recovery System</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
-              {settings.heroHeadline || 'Protect Your Campus Gear.'} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-blue-200">
-                {settings.tagline}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={reduced ? reducedVariants(staggerContainer, true) : staggerContainer}
+              className="text-display text-[var(--ct-text-primary)] leading-[1.1] flex flex-wrap gap-x-2 gap-y-1 justify-center"
+            >
+              {headlineWords.map((word, i) => (
+                <motion.span
+                  key={`headline-${i}`}
+                  variants={reduced ? reducedVariants(staggerItem, true) : staggerItem}
+                  className="inline-block"
+                >
+                  {word}
+                </motion.span>
+              ))}
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--ct-accent-hover)] via-sky-300 to-blue-200 inline-flex flex-wrap gap-x-2 justify-center">
+                {taglineWords.map((word, i) => (
+                  <motion.span
+                    key={`tagline-${i}`}
+                    variants={reduced ? reducedVariants(staggerItem, true) : staggerItem}
+                    className="inline-block"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
               </span>
-            </h1>
+            </motion.div>
 
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
+            <p className="text-body text-[var(--ct-text-secondary)] leading-relaxed max-w-xl mx-auto">
               {settings.heroDescription ||
                 'The privacy-first QR tagging platform for students, researchers, and campus faculty. Recover lost laptops, bikes, and lab equipment with zero personal phone numbers or emails exposed.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="flex flex-wrap items-center justify-center gap-4 pt-4"
+            >
               <button
                 onClick={() => onOpenAuth('register')}
-                className="px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-xl shadow-blue-600/30 flex items-center gap-2 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                className="ct-btn-primary"
               >
                 <span>Protect Your First 5 Items Free</span>
                 <ArrowRight className="w-4 h-4" />
@@ -218,92 +256,130 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                   const el = document.getElementById('interactive-demo');
                   el?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="px-6 py-3.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 rounded-xl text-sm font-semibold transition-all cursor-pointer backdrop-blur-xs"
+                className="px-6 py-3.5 bg-[var(--ct-bg-surface)]/80 hover:bg-[var(--ct-bg-elevated)]/80 border border-[var(--ct-border-subtle)] text-[var(--ct-text-secondary)] rounded-[var(--ct-radius-lg)] text-sm font-semibold transition-all cursor-pointer backdrop-blur-xs ct-touch-target"
               >
                 Try Live Scanner Demo
               </button>
-            </div>
+            </motion.div>
 
-            <div className="pt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-slate-300">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.18 }}
+              className="pt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-[var(--ct-text-muted)]"
+            >
               <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400" />
+                <Check className="w-4 h-4 text-[var(--ct-status-success)]" />
                 <span>Zero PII Exposed to Finders</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400" />
+                <Check className="w-4 h-4 text-[var(--ct-status-success)]" />
                 <span>Tags Work Even If Plan Expires</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400" />
+                <Check className="w-4 h-4 text-[var(--ct-status-success)]" />
                 <span>Print-Ready Waterproof Labels</span>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* Institutional Trust & Campus Metric Strip */}
-      <section className="bg-slate-900 border-b border-slate-800 py-6 px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div className="space-y-1">
-            <div className="text-2xl sm:text-3xl font-black text-white">87.4%</div>
-            <div className="text-xs text-slate-400">Recovery Rate Within 4 Hours</div>
-          </div>
-          <div className="space-y-1">
-            <div className="text-2xl sm:text-3xl font-black text-blue-400">0 PII</div>
-            <div className="text-xs text-slate-400">Zero Personal Phone Numbers Shared</div>
-          </div>
-          <div className="space-y-1">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-400">100% Free</div>
-            <div className="text-xs text-slate-400">OpenStreetMap Interactive Pin Drop</div>
-          </div>
-          <div className="space-y-1">
-            <div className="text-2xl sm:text-3xl font-black text-white">&lt; 15s</div>
-            <div className="text-xs text-slate-400">Finder Report Submission Time</div>
-          </div>
-        </div>
+      <section className="bg-[var(--ct-bg-surface)] border-b border-[var(--ct-border-subtle)] py-6 px-6">
+      <ScrollReveal once={true}>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
+        >
+          <motion.div
+            key="m1"
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0, ease: [0.25, 1, 0.5, 1] }}
+            className="space-y-1"
+          >
+            <div className="text-2xl sm:text-3xl font-black text-[var(--ct-text-primary)]">87.4%</div>
+            <div className="text-xs text-[var(--ct-text-muted)]">Recovery Rate Within 4 Hours</div>
+          </motion.div>
+          <motion.div
+            key="m2"
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.07, ease: [0.25, 1, 0.5, 1] }}
+            className="space-y-1"
+          >
+            <div className="text-2xl sm:text-3xl font-black text-[var(--ct-accent-hover)]">0 PII</div>
+            <div className="text-xs text-[var(--ct-text-muted)]">Zero Personal Phone Numbers Shared</div>
+          </motion.div>
+          <motion.div
+            key="m3"
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.14, ease: [0.25, 1, 0.5, 1] }}
+            className="space-y-1"
+          >
+            <div className="text-2xl sm:text-3xl font-black text-[var(--ct-status-success)]">100% Free</div>
+            <div className="text-xs text-[var(--ct-text-muted)]">OpenStreetMap Interactive Pin Drop</div>
+          </motion.div>
+          <motion.div
+            key="m4"
+            initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.21, ease: [0.25, 1, 0.5, 1] }}
+            className="space-y-1"
+          >
+            <div className="text-2xl sm:text-3xl font-black text-[var(--ct-text-primary)]">&lt; 15s</div>
+            <div className="text-xs text-[var(--ct-text-muted)]">Finder Report Submission Time</div>
+          </motion.div>
+        </motion.div>
+      </ScrollReveal>
       </section>
 
       {/* Interactive Finder Simulator Bar */}
-      <section id="interactive-demo" className="py-12 bg-slate-900/95 border-b border-slate-800 px-6">
+      <section id="interactive-demo" className="py-12 bg-[var(--ct-bg-surface)]/95 border-b border-[var(--ct-border-subtle)] px-6">
+      <ScrollReveal once={true}>
         <div className="max-w-4xl mx-auto">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+          <div className="ct-card-glass p-6 sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
               <div>
-                <span className="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span className="text-caption text-[var(--ct-accent-hover)] flex items-center gap-1.5">
                   <Smartphone className="w-4 h-4" />
                   Live QR Finder Simulator
                 </span>
-                <h3 className="text-lg font-bold text-white mt-1">
+                <h3 className="text-title text-[var(--ct-text-primary)] mt-1">
                   Test what a stranger sees when they scan your item
                 </h3>
               </div>
-              <span className="text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
+              <span className="text-[10px] text-[var(--ct-text-muted)] bg-[var(--ct-bg-elevated)] px-3 py-1 rounded-[var(--ct-radius-sm)] border border-[var(--ct-border-subtle)]">
                 Privacy-First · No Login Needed
               </span>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <div className="relative flex-1">
-                <QrCode className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <QrCode className="w-4 h-4 text-[var(--ct-text-muted)] absolute left-3.5 top-3.5" />
                 <input
                   type="text"
                   value={demoInputId}
                   onChange={(e) => setDemoInputId(e.target.value)}
                   placeholder="Enter sample public tag ID..."
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500 font-mono"
+                  className="ct-input w-full pl-10 pr-4 py-3 bg-[var(--ct-bg-surface)] font-mono"
                 />
               </div>
               <button
                 onClick={() => onSimulateFinderScan(demoInputId)}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md shrink-0 flex items-center justify-center gap-2"
+                className="px-6 py-3 bg-[var(--ct-accent)] hover:bg-[var(--ct-accent-hover)] text-white rounded-[var(--ct-radius-lg)] text-xs font-bold transition-colors cursor-pointer shadow-[var(--ct-shadow-sm)] shadow-blue-500/20 shrink-0 flex items-center justify-center gap-2"
               >
                 <span>Simulate Scan (/f/{demoInputId})</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-[var(--ct-text-muted)]">
               <span>Or click a registered item:</span>
               {sampleItems.slice(0, 3).map(item => (
                 <button
@@ -312,7 +388,7 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                     setDemoInputId(item.publicId);
                     onSimulateFinderScan(item.publicId);
                   }}
-                  className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-blue-300 font-mono text-[11px] cursor-pointer transition-colors"
+                  className="px-2.5 py-1 bg-[var(--ct-bg-elevated)] hover:bg-[var(--ct-bg-surface)] border border-[var(--ct-border-subtle)] text-[var(--ct-accent-hover)] font-mono text-[11px] cursor-pointer transition-colors rounded-[var(--ct-radius-sm)]"
                 >
                   {item.publicId} ({item.name.slice(0, 16)}...)
                 </button>
@@ -320,24 +396,31 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
             </div>
           </div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 px-6 bg-white">
+      <section id="how-it-works" className="py-20 px-6 bg-[var(--ct-bg-deep)]">
+      <ScrollReveal once={true}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+            <span className="text-caption text-[var(--ct-accent-hover)] uppercase tracking-wider">
               Simple 4-Step Recovery Workflow
             </span>
-            <h2 className="text-3xl font-black text-slate-900">
+            <h2 className="text-headline text-[var(--ct-text-primary)]">
               How Campus Tag Works
             </h2>
-            <p className="text-sm text-slate-600">
+            <p className="text-body text-[var(--ct-text-secondary)]">
               Engineered specifically for university campus life where items are often left in study lounges, libraries, and lab desks.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-4 gap-8"
+          >
             {(settings.howItWorksSteps && settings.howItWorksSteps.length > 0
               ? settings.howItWorksSteps
               : [
@@ -347,125 +430,153 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                   { stepNumber: '04', title: 'Safe Handover', description: 'Finder drops a pin or leaves the item at campus lost & found, notifying you instantly through anonymous two-way chat.' }
                 ]
             ).map((s, idx) => (
-              <div key={idx} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 relative hover:shadow-md transition-shadow">
-                <div className={`w-10 h-10 rounded-xl text-white font-black text-sm flex items-center justify-center mb-4 shadow-sm ${
-                  idx === 2 ? 'bg-amber-500 text-slate-950' : idx === 3 ? 'bg-emerald-600' : 'bg-blue-600'
+              <motion.div
+                key={idx}
+                initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.07 * idx, ease: [0.25, 1, 0.5, 1] }}
+                whileHover={{ y: -4 }}
+                className="ct-card p-6 relative"
+              >
+                <div className={`w-10 h-10 rounded-[var(--ct-radius-lg)] text-[var(--ct-text-inverse)] font-black text-sm flex items-center justify-center mb-4 shadow-[var(--ct-shadow-sm)] ${
+                  idx === 2 ? 'bg-[var(--ct-status-warning)]' : idx === 3 ? 'bg-[var(--ct-status-success)]' : 'bg-[var(--ct-accent)]'
                 }`}>
                   0{s.stepNumber || idx + 1}
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">{s.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <h3 className="text-base font-bold text-[var(--ct-text-primary)] mb-2">{s.title}</h3>
+                <p className="text-[var(--ct-text-secondary)] leading-relaxed text-[11px]">
                   {s.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* Real-World Recovery Scenarios Section */}
-      <section className="py-20 px-6 bg-slate-100/70 border-t border-slate-200">
+      <section className="py-20 px-6 bg-[var(--ct-bg-surface)] border-t border-[var(--ct-border-subtle)]">
+      <ScrollReveal once={true}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+            <span className="text-caption text-[var(--ct-accent-hover)] uppercase tracking-wider">
               Proven Across Campus Realities
             </span>
-            <h2 className="text-3xl font-black text-slate-900">
+            <h2 className="text-headline text-[var(--ct-text-primary)]">
               Real-World Recovery Scenarios
             </h2>
-            <p className="text-sm text-slate-600">
+            <p className="text-body text-[var(--ct-text-secondary)]">
               See how everyday items get returned safely across libraries, residence halls, and research labs.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Scenario Selector */}
-            <div className="lg:col-span-5 space-y-3">
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4 }}
+              className="lg:col-span-5 space-y-3"
+            >
               {realWorldScenarios.map((sc, i) => (
-                <button
+                <motion.button
                   key={i}
+                  whileHover={{ x: -4 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setActiveScenarioIdx(i)}
-                  className={`w-full text-left p-4 rounded-xl border transition-all cursor-pointer ${
+                  className={`w-full text-left p-4 rounded-[var(--ct-radius-lg)] border transition-all cursor-pointer ${
                     activeScenarioIdx === i
-                      ? 'bg-white border-blue-600 shadow-md ring-2 ring-blue-500/10'
-                      : 'bg-white/60 border-slate-200 hover:bg-white text-slate-600'
+                      ? 'bg-[var(--ct-card-elevated)] border-[var(--ct-accent)] shadow-[var(--ct-shadow-md)] ring-1 ring-[var(--ct-accent)]/20'
+                      : 'bg-[var(--ct-card)]/50 border-[var(--ct-border-subtle)] hover:bg-[var(--ct-card-elevated)] text-[var(--ct-text-secondary)]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[var(--ct-accent-hover)] uppercase tracking-wider">
                       {sc.category}
                     </span>
-                    <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-slate-400" />
+                    <span className="text-[10px] text-[var(--ct-text-muted)] font-mono flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-[var(--ct-text-muted)]" />
                       {sc.recoveryTime}
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 mt-1">{sc.title}</h4>
-                  <p className="text-xs text-slate-500 mt-1 truncate">{sc.item}</p>
-                </button>
+                  <h4 className="text-sm font-bold text-[var(--ct-text-primary)] mt-1">{sc.title}</h4>
+                  <p className="text-[10px] text-[var(--ct-text-muted)] mt-1 truncate">{sc.item}</p>
+                </motion.button>
               ))}
-            </div>
+            </motion.div>
 
             {/* Active Scenario Detailed Breakdown */}
-            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="lg:col-span-7 ct-card p-6 sm:p-8 space-y-5"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--ct-border-subtle)] pb-4">
                 <div>
-                  <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[var(--ct-accent-hover)] uppercase tracking-wider">
                     Incident Case Breakdown
                   </span>
-                  <h3 className="text-xl font-bold text-slate-900 mt-0.5">
+                  <h3 className="text-title text-[var(--ct-text-primary)] mt-0.5">
                     {realWorldScenarios[activeScenarioIdx].item}
                   </h3>
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ct-status-success)]/10 text-[var(--ct-status-success)] border border-[var(--ct-status-success)]/20 rounded-full text-[10px] font-bold">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[var(--ct-status-success)]" />
                   <span>{realWorldScenarios[activeScenarioIdx].status}</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
-                  <span className="text-slate-400 uppercase font-semibold text-[10px] block">Location Incident</span>
-                  <span className="font-bold text-slate-800 mt-0.5 block">{realWorldScenarios[activeScenarioIdx].title}</span>
+              <div className="grid grid-cols-2 gap-4 text-[10px]">
+                <div className="p-3 bg-[var(--ct-bg-elevated)] rounded-[var(--ct-radius-lg)] border border-[var(--ct-border-subtle)]/60">
+                  <span className="text-[var(--ct-text-muted)] uppercase font-semibold text-[9px] block">Location Incident</span>
+                  <span className="font-bold text-[var(--ct-text-primary)] mt-0.5 block">{realWorldScenarios[activeScenarioIdx].title}</span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
-                  <span className="text-slate-400 uppercase font-semibold text-[10px] block">Good Samaritan</span>
-                  <span className="font-bold text-slate-800 mt-0.5 block">{realWorldScenarios[activeScenarioIdx].finderRole}</span>
+                <div className="p-3 bg-[var(--ct-bg-elevated)] rounded-[var(--ct-radius-lg)] border border-[var(--ct-border-subtle)]/60">
+                  <span className="text-[var(--ct-text-muted)] uppercase font-semibold text-[9px] block">Good Samaritan</span>
+                  <span className="font-bold text-[var(--ct-text-primary)] mt-0.5 block">{realWorldScenarios[activeScenarioIdx].finderRole}</span>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-[var(--ct-text-secondary)] leading-relaxed text-[11px]">
                 {realWorldScenarios[activeScenarioIdx].description}
               </p>
 
-              <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="p-4 bg-[var(--ct-accent)]/10 border border-[var(--ct-accent)]/20 rounded-[var(--ct-radius-lg)] text-[var(--ct-accent-hover)] flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-[var(--ct-accent-hover)] shrink-0 mt-0.5" />
                 <div>
                   <strong className="font-bold block">Privacy Firewall In Effect:</strong>
                   The finder was never shown the owner's phone number, dorm room number, or email address. Both parties coordinated purely through Campus Tag's anonymous session relay.
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-20 px-6 bg-slate-50 border-t border-slate-200/80">
+      <section id="features" className="py-20 px-6 bg-[var(--ct-bg-deep)] border-t border-[var(--ct-border-subtle)]">
+      <ScrollReveal once={true}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+            <span className="text-caption text-[var(--ct-accent-hover)] uppercase tracking-wider">
               Zero Compromise
             </span>
-            <h2 className="text-3xl font-black text-slate-900">
+            <h2 className="text-headline text-[var(--ct-text-primary)]">
               Engineered for Modern Campus Security
             </h2>
-            <p className="text-sm text-slate-600">
+            <p className="text-body text-[var(--ct-text-secondary)]">
               Unlike traditional pet tags or luggage trackers, Campus Tag is designed strictly around student and researcher safety.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
             {(settings.featuresList && settings.featuresList.length > 0
               ? settings.featuresList
               : [
@@ -477,8 +588,15 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                   { id: '6', title: 'Emergency Lost Broadcast', description: 'Broadcast custom reward notices and instructions to campus security desks the moment you realize something is missing.' }
                 ]
             ).map((feat, idx) => (
-              <div key={feat.id || idx} className="bg-white p-7 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+              <motion.div
+                key={feat.id || idx}
+                initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.07 * idx }}
+                whileHover={{ y: -4 }}
+                className="ct-card p-6 space-y-3"
+              >
+                <div className={`w-10 h-10 rounded-[var(--ct-radius-lg)] bg-[var(--ct-accent)]/10 text-[var(--ct-accent-hover)] flex items-center justify-center font-bold`}>
                   {idx === 0 && <Lock className="w-5 h-5" />}
                   {idx === 1 && <MapPin className="w-5 h-5" />}
                   {idx === 2 && <Building className="w-5 h-5" />}
@@ -486,108 +604,121 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                   {idx === 4 && <QrCode className="w-5 h-5" />}
                   {idx >= 5 && <AlertTriangle className="w-5 h-5" />}
                 </div>
-                <h3 className="text-base font-bold text-slate-900">{feat.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <h3 className="text-base font-bold text-[var(--ct-text-primary)]">{feat.title}</h3>
+                <p className="text-[var(--ct-text-secondary)] leading-relaxed text-[11px]">
                   {feat.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* Dynamic Pricing (Directly from database) */}
-      <section id="pricing" className="py-20 px-6 bg-white border-t border-slate-200">
+      <section id="pricing" className="py-20 px-6 bg-[var(--ct-bg-deep)] border-t border-[var(--ct-border-subtle)]">
+      <ScrollReveal once={true}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+            <span className="text-caption text-[var(--ct-accent-hover)] uppercase tracking-wider">
               Transparent Campus Rates
             </span>
-            <h2 className="text-3xl font-black text-slate-900">
+            <h2 className="text-headline text-[var(--ct-text-primary)]">
               Simple, Affordable Pricing
             </h2>
-            <p className="text-sm text-slate-600">
+            <p className="text-body text-[var(--ct-text-secondary)]">
               Configured dynamically by platform administrators. No hidden charges or renewal traps.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
             {plans.map((p) => (
-              <div
+              <motion.div
                 key={p.id}
-                className={`rounded-2xl border p-8 flex flex-col justify-between transition-all ${
+                initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.07 * plans.indexOf(p) }}
+                whileHover={{ y: -4 }}
+                className={`rounded-[var(--ct-radius-xl)] border p-8 flex flex-col justify-between transition-all ${
                   p.isPopular
-                    ? 'border-2 border-blue-600 bg-white shadow-xl shadow-blue-500/10 ring-4 ring-blue-500/5 relative'
-                    : 'border-slate-200 bg-slate-50/50 shadow-xs'
+                    ? 'border-[var(--ct-accent)] bg-[var(--ct-card-elevated)] shadow-[var(--ct-shadow-lg)] shadow-blue-500/10 ring-1 ring-[var(--ct-accent)]/20 relative'
+                    : 'border-[var(--ct-border-subtle)] bg-[var(--ct-card)] shadow-[var(--ct-shadow-sm)]'
                 }`}
               >
                 {p.isPopular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--ct-accent)] text-white text-[10px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-[var(--ct-shadow-sm)]">
                     Most Popular for Students
                   </div>
                 )}
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[var(--ct-accent-hover)] uppercase tracking-wider">
                       {p.billingCycle}
                     </span>
                     {p.trialDays > 0 && (
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      <span className="text-[9px] font-bold text-[var(--ct-status-success)] bg-[var(--ct-status-success)]/10 px-2 py-0.5 rounded border border-[var(--ct-status-success)]/20">
                         {p.trialDays} Days Free Trial
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-900">{p.name}</h3>
+                  <h3 className="text-title text-[var(--ct-text-primary)]">{p.name}</h3>
                   <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-4xl font-black text-slate-900">${p.price}</span>
-                    <span className="text-xs text-slate-500">/{p.billingCycle}</span>
+                    <span className="text-4xl font-black text-[var(--ct-text-primary)]">${p.price}</span>
+                    <span className="text-[10px] text-[var(--ct-text-muted)]">/{p.billingCycle}</span>
                   </div>
 
-                  <div className="mt-2 text-xs font-semibold text-slate-600">
+                  <div className="mt-2 text-[10px] font-semibold text-[var(--ct-text-secondary)]">
                     Capacity: Up to {p.itemLimit} campus items
                   </div>
 
-                  <ul className="mt-6 space-y-3 text-xs text-slate-600">
+                  <ul className="mt-6 space-y-3 text-[var(--ct-text-secondary)] text-[11px]">
                     {p.features.map((feat, i) => (
                       <li key={i} className="flex items-start gap-2.5">
-                        <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                        <Check className="w-4 h-4 text-[var(--ct-accent-hover)] shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-200">
+                <div className="mt-8 pt-6 border-t border-[var(--ct-border-subtle)]">
                   <button
                     onClick={() => onOpenAuth('register')}
-                    className={`w-full py-3 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm ${
+                    className={`w-full py-3 rounded-[var(--ct-radius-lg)] text-[10px] font-bold transition-all cursor-pointer shadow-sm ${
                       p.isPopular
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20'
-                        : 'bg-white hover:bg-slate-100 text-slate-800 border border-slate-300'
+                        ? 'bg-[var(--ct-accent)] hover:bg-[var(--ct-accent-hover)] text-white shadow-blue-500/20 ct-btn-primary'
+                        : 'bg-[var(--ct-bg-surface)] hover:bg-[var(--ct-bg-elevated)] text-[var(--ct-text-secondary)] border border-[var(--ct-border-subtle)] ct-touch-target'
                     }`}
                   >
                     Get Started with {p.name}
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* Interactive FAQ Accordion */}
-      <section className="py-20 px-6 bg-slate-50 border-t border-slate-200">
+      <section className="py-20 px-6 bg-[var(--ct-bg-deep)] border-t border-[var(--ct-border-subtle)]">
+      <ScrollReveal once={true}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+            <span className="text-caption text-[var(--ct-accent-hover)] uppercase tracking-wider">
               Answers & Clarifications
             </span>
-            <h2 className="text-3xl font-black text-slate-900">
+            <h2 className="text-headline text-[var(--ct-text-primary)]">
               Frequently Asked Questions
             </h2>
-            <p className="text-sm text-slate-600">
+            <p className="text-body text-[var(--ct-text-secondary)]">
               Everything you need to know about campus privacy, QR durability, and map tracking.
             </p>
 
@@ -597,10 +728,10 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                 <button
                   key={cat}
                   onClick={() => setFaqCategoryFilter(cat)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
+                  className={`px-3 py-1.5 rounded-[var(--ct-radius-sm)] text-[10px] font-semibold cursor-pointer transition-colors ${
                     faqCategoryFilter === cat
-                      ? 'bg-blue-600 text-white font-bold'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900'
+                      ? 'bg-[var(--ct-accent)] text-white font-bold'
+                      : 'bg-[var(--ct-bg-surface)] border border-[var(--ct-border-subtle)] text-[var(--ct-text-secondary)] hover:text-[var(--ct-text-primary)]'
                   }`}
                 >
                   {cat}
@@ -613,65 +744,79 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
             {filteredFaqs.map((faq) => {
               const isOpen = expandedFaqId === faq.id;
               return (
-                <div
+                <motion.div
                   key={faq.id}
-                  className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs transition-colors"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="ct-card border-[var(--ct-border-subtle)] overflow-hidden transition-colors"
                 >
                   <button
                     onClick={() => setExpandedFaqId(isOpen ? null : faq.id)}
-                    className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/50"
+                    className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[var(--ct-bg-elevated)] ct-touch-target"
                   >
-                    <span className="text-sm font-bold text-slate-900 flex items-center gap-2.5">
-                      <HelpCircle className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span className="text-sm font-bold text-[var(--ct-text-primary)] flex items-center gap-2.5">
+                      <HelpCircle className="w-4 h-4 text-[var(--ct-accent-hover)] shrink-0" />
                       <span>{faq.question}</span>
                     </span>
                     {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-slate-400 shrink-0" />
+                      <ChevronUp className="w-4 h-4 text-[var(--ct-text-muted)] shrink-0 transition-transform duration-200" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                      <ChevronDown className="w-4 h-4 text-[var(--ct-text-muted)] shrink-0 transition-transform duration-200" />
                     )}
                   </button>
 
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-100">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
+                  <motion.div
+                    initial="hidden"
+                    animate={isOpen ? 'visible' : 'hidden'}
+                    exit="exit"
+                    variants={accordionContent}
+                    className="px-5 pb-5 pt-1 text-[var(--ct-text-secondary)] leading-relaxed border-t border-[var(--ct-border-subtle)]"
+                  >
+                    {faq.answer}
+                  </motion.div>
+                </motion.div>
               );
             })}
           </div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* NEW PROMINENT SECTION DIRECTLY ABOVE FOOTER: FUTURE USE & BENEFITS */}
       {settings.futureUseSection?.enabled !== false && (
         <section
           id="future-benefits"
-          className="py-24 px-6 bg-gradient-to-b from-slate-900 via-blue-950 to-slate-950 text-white border-t border-slate-800 relative overflow-hidden"
+          className="py-24 px-6 bg-gradient-to-b from-[var(--ct-bg-deep)] via-blue-950/10 to-[var(--ct-bg-surface)] text-[var(--ct-text-primary)] border-t border-[var(--ct-border-subtle)] relative overflow-hidden"
         >
+        <ScrollReveal once={true}>
           {/* Subtle Ambient Glow */}
           <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-xs font-semibold backdrop-blur-xs">
-                <Sparkles className="w-4 h-4 text-blue-400" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--ct-accent)]/10 border border-[var(--ct-accent)]/30 text-[var(--ct-accent-hover)] text-[10px] font-semibold backdrop-blur-xs">
+                <Sparkles className="w-4 h-4 text-[var(--ct-accent-hover)]" />
                 <span>{settings.futureUseSection?.badge || 'Next-Generation Campus Architecture'}</span>
               </div>
 
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+              <h2 className="text-headline text-[var(--ct-text-primary)] tracking-tight">
                 {settings.futureUseSection?.headline || 'Future Use & Long-Term Campus Benefits'}
               </h2>
 
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              <p className="text-body text-[var(--ct-text-secondary)] leading-relaxed">
                 {settings.futureUseSection?.subheadline ||
                   'How Campus Tag is expanding beyond sticker recovery into an integrated smart IoT and automated campus security network for higher education.'}
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {(settings.futureUseSection?.items && settings.futureUseSection.items.length > 0
                 ? settings.futureUseSection.items
                 : [
@@ -681,7 +826,7 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                       title: 'NFC Dual-Protocol Instant Tap Badges',
                       description: 'Next-generation tags combining tamper-evident micro-QR codes with NTAG-424 DNA cryptographic NFC chips. Finders simply tap with any iPhone or Android without opening camera apps.',
                       highlight: 'Instant tap · Zero app needed · Ruggedized polymer',
-                      readinessStatus: 'Campus Pilot' as const
+                      readinessStatus: 'Campus Pilot'
                     },
                     {
                       id: 'fut_2',
@@ -689,7 +834,7 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                       title: 'Campus Police & Dispatch Desk Webhooks',
                       description: 'Direct institutional API dispatch connecting lost reports straight into university public safety software, security guard tablets, and central student union lost & found desks.',
                       highlight: 'Real-time alert relay · Centralized chain of custody',
-                      readinessStatus: 'Active Beta' as const
+                      readinessStatus: 'Active Beta'
                     },
                     {
                       id: 'fut_3',
@@ -697,7 +842,7 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                       title: 'Smart Locker Drop-Box Integration',
                       description: 'Partnership with automated campus parcel lockers. Finders can deposit found laptops or keys into a 24/7 security locker; the system automatically texts the owner a pickup OTP.',
                       highlight: '24/7 safe drop-off · Contactless secure handover',
-                      readinessStatus: 'In Deployment' as const
+                      readinessStatus: 'In Deployment'
                     },
                     {
                       id: 'fut_4',
@@ -705,7 +850,7 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                       title: 'AI Visual Match & Asset OCR Verification',
                       description: 'Automated photo analysis compares finder photos against registered equipment photos, identifying matching scratches, lab asset barcodes, and serial numbers with zero human data exposure.',
                       highlight: 'Instant photo verification · Zero PII disclosure',
-                      readinessStatus: 'Phase 2 Architecture' as const
+                      readinessStatus: 'Phase 2 Architecture'
                     },
                     {
                       id: 'fut_5',
@@ -713,7 +858,7 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                       title: 'Inter-Campus Student Roaming Federation',
                       description: 'Cross-institutional tag verification across participating universities, regional athletic conferences, and cross-enrollment research stations.',
                       highlight: 'Multi-university coverage · Roaming recovery',
-                      readinessStatus: 'Campus Pilot' as const
+                      readinessStatus: 'Campus Pilot'
                     },
                     {
                       id: 'fut_6',
@@ -721,34 +866,38 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                       title: 'Departmental Asset Lifecycle & E-Waste Reduction',
                       description: 'Comprehensive retention analytics showing departments how many research instruments and loaner laptops were spared from replacement, supporting campus green initiatives.',
                       highlight: 'Quantifiable ROI · Reduced replacement budgets',
-                      readinessStatus: 'In Deployment' as const
+                      readinessStatus: 'In Deployment'
                     }
                   ]
               ).map((item, idx) => (
-                <div
+                <motion.div
                   key={item.id || idx}
-                  className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-7 flex flex-col justify-between hover:border-blue-500/50 hover:bg-slate-900 transition-all hover:-translate-y-1 shadow-xl shadow-black/20 group"
+                  initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.07 * idx }}
+                  whileHover={{ y: -4 }}
+                  className="ct-card p-6 sm:p-7 flex flex-col justify-between hover:border-[var(--ct-border-accent)] hover:bg-[var(--ct-card-elevated)] transition-all hover:-translate-y-1 shadow-[var(--ct-shadow-sm)] group"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[var(--ct-accent-hover)] uppercase tracking-wider">
                         {item.badge}
                       </span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-[var(--ct-radius-sm)] border ${
                         item.readinessStatus === 'Active Beta'
-                          ? 'bg-blue-950 text-blue-300 border-blue-800'
+                          ? 'bg-blue-950/20 text-[var(--ct-accent-hover)] border-[var(--ct-accent)]/30'
                           : item.readinessStatus === 'In Deployment'
-                          ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                          ? 'bg-[var(--ct-status-success)]/10 text-[var(--ct-status-success)] border-[var(--ct-status-success)]/20'
                           : item.readinessStatus === 'Campus Pilot'
-                          ? 'bg-purple-950 text-purple-300 border-purple-800'
-                          : 'bg-slate-800 text-slate-300 border-slate-700'
+                          ? 'bg-purple-950/20 text-purple-300 border-purple-800/30'
+                          : 'bg-slate-800/20 text-[var(--ct-text-muted)] border-[var(--ct-border-subtle)]'
                       }`}>
                         {item.readinessStatus}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <div className={`w-9 h-9 rounded-[var(--ct-radius-md)] bg-[var(--ct-accent)]/20 border border-[var(--ct-accent)]/30 text-[var(--ct-accent-hover)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform`}>
                         {idx === 0 && <Radio className="w-4 h-4" />}
                         {idx === 1 && <Building className="w-4 h-4" />}
                         {idx === 2 && <Lock className="w-4 h-4" />}
@@ -756,28 +905,28 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                         {idx === 4 && <Layers className="w-4 h-4" />}
                         {idx === 5 && <Award className="w-4 h-4" />}
                       </div>
-                      <h3 className="text-base font-bold text-white leading-snug">
+                      <h3 className="text-base font-bold text-[var(--ct-text-primary)] leading-snug">
                         {item.title}
                       </h3>
                     </div>
 
-                    <p className="text-xs text-slate-400 leading-relaxed">
+                    <p className="text-[var(--ct-text-secondary)] leading-relaxed text-[11px]">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-                    <span className="font-mono text-slate-300">{item.highlight}</span>
-                    <Sparkles className="w-3.5 h-3.5 text-blue-400 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  <div className="mt-6 pt-4 border-t border-[var(--ct-border-subtle)]/50 flex items-center justify-between text-[10px] text-[var(--ct-text-muted)]">
+                    <span className="font-mono text-[var(--ct-text-secondary)]">{item.highlight}</span>
+                    <Sparkles className="w-3.5 h-3.5 text-[var(--ct-accent-hover)] opacity-60 group-hover:opacity-100 transition-opacity" />
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
-            <div className="mt-12 p-6 bg-slate-950/70 border border-slate-800 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="mt-12 p-6 bg-[var(--ct-bg-elevated)]/50 border border-[var(--ct-border-subtle)] rounded-[var(--ct-radius-xl)] flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="space-y-1 text-center sm:text-left">
-                <h4 className="text-sm font-bold text-white">Want to Pilot Campus Tag at Your Institution?</h4>
-                <p className="text-xs text-slate-400">
+                <h4 className="text-sm font-bold text-[var(--ct-text-primary)]">Want to Pilot Campus Tag at Your Institution?</h4>
+                <p className="text-[10px] text-[var(--ct-text-muted)]">
                   We partner with university CIOs, campus security desks, and academic department fleets.
                 </p>
               </div>
@@ -786,44 +935,46 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                   const el = document.getElementById('contact');
                   el?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shrink-0 shadow-md"
+                className="px-5 py-2.5 bg-[var(--ct-accent)] hover:bg-[var(--ct-accent-hover)] text-white rounded-[var(--ct-radius-lg)] text-[10px] font-bold transition-colors cursor-pointer shrink-0 shadow-[var(--ct-shadow-sm)]"
               >
                 Inquire for Institutional Pilot
               </button>
             </div>
           </div>
+        </ScrollReveal>
         </section>
       )}
 
       {/* Support / Contact Form */}
-      <section id="contact" className="py-20 px-6 bg-slate-900 text-white">
+      <section id="contact" className="py-20 px-6 bg-[var(--ct-bg-surface)] text-[var(--ct-text-primary)]">
+      <ScrollReveal once={true}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-3">
-            <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+            <span className="text-caption text-[var(--ct-accent-hover)] uppercase tracking-wider">
               Direct Campus Helpdesk
             </span>
-            <h2 className="text-3xl font-black text-white">
+            <h2 className="text-headline text-[var(--ct-text-primary)]">
               Get in Touch with Campus Tag
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-body text-[var(--ct-text-secondary)]">
               Have questions about batch lab onboarding or integration with campus security desks?
             </p>
           </div>
 
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+          <div className="ct-card p-8 shadow-[var(--ct-shadow-lg)]">
             {contactSubmitted ? (
               <div className="p-8 text-center space-y-3">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-                <h3 className="text-lg font-bold text-white">Message Dispatched</h3>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                <CheckCircle2 className="w-12 h-12 text-[var(--ct-status-success)] mx-auto" />
+                <h3 className="text-lg font-bold text-[var(--ct-text-primary)]">Message Dispatched</h3>
+                <p className="text-[var(--ct-text-secondary)] max-w-md mx-auto">
                   Your ticket has been logged into our support queue. A campus integration engineer will respond to {contactEmail} within 24 hours.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleContactSubmit} className="space-y-4 text-xs">
+              <form onSubmit={handleContactSubmit} className="space-y-4 text-[10px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-400 font-bold uppercase tracking-wider mb-1">
+                    <label className="block text-[var(--ct-text-secondary)] font-bold uppercase tracking-wider mb-1">
                       Campus / Institutional Email *
                     </label>
                     <input
@@ -832,18 +983,18 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
                       placeholder="e.g. jsmith@university.edu"
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                      className="ct-input"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-400 font-bold uppercase tracking-wider mb-1">
+                    <label className="block text-[var(--ct-text-secondary)] font-bold uppercase tracking-wider mb-1">
                       Inquiry Category
                     </label>
                     <select
                       value={contactSubject}
                       onChange={(e) => setContactSubject(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                      className="ct-input"
                     >
                       <option value="Campus Department Fleet Inquiry">Campus Department Fleet Inquiry</option>
                       <option value="Student Organization Bulk Tags">Student Organization Bulk Tags</option>
@@ -855,7 +1006,7 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-bold uppercase tracking-wider mb-1">
+                  <label className="block text-[var(--ct-text-secondary)] font-bold uppercase tracking-wider mb-1">
                     Message / Equipment Details *
                   </label>
                   <textarea
@@ -864,14 +1015,14 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
                     placeholder="Tell us about your campus department or questions..."
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="ct-input"
                   />
                 </div>
 
                 <div className="pt-2 flex justify-end">
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-600/30 transition-colors"
+                    className="px-6 py-3 bg-[var(--ct-accent)] hover:bg-[var(--ct-accent-hover)] text-white font-bold rounded-[var(--ct-radius-lg)] text-[10px] flex items-center gap-2 cursor-pointer shadow-[var(--ct-shadow-md)] shadow-blue-500/30 transition-colors"
                   >
                     <Send className="w-4 h-4" />
                     <span>Submit Helpdesk Inquiry</span>
@@ -881,16 +1032,17 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
             )}
           </div>
         </div>
+      </ScrollReveal>
       </section>
 
       {/* Policy Modal Overlay if user clicked a policy in footer */}
       {activePolicy && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto border border-slate-200 shadow-2xl p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="ct-card-elevated rounded-[var(--ct-radius-xl)] max-w-3xl w-full max-h-[85vh] overflow-y-auto border border-[var(--ct-border-subtle)] shadow-[var(--ct-shadow-lg)] p-6 sm:p-8 space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[var(--ct-border-subtle)]">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-bold text-slate-900">
+                <FileText className="w-5 h-5 text-[var(--ct-accent-hover)]" />
+                <h3 className="text-title text-[var(--ct-text-primary)]">
                   {activePolicy === 'privacy' && 'Campus Tag Privacy Policy'}
                   {activePolicy === 'terms' && 'Campus Tag Terms of Service'}
                   {activePolicy === 'refund' && 'Refund & Cancellation Policy'}
@@ -898,28 +1050,28 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
               </div>
               <button
                 onClick={onClosePolicy}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors text-sm font-bold cursor-pointer"
+                className="p-1.5 rounded-[var(--ct-radius-sm)] text-[var(--ct-text-muted)] hover:text-[var(--ct-text-primary)] hover:bg-[var(--ct-bg-elevated)] transition-colors text-[10px] font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="text-xs text-slate-600 space-y-4 leading-relaxed">
+            <div className="text-[var(--ct-text-secondary)] space-y-4 leading-relaxed text-[11px]">
               {activePolicy === 'privacy' && (
                 <>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     1. Fundamental Privacy Guarantee (Zero PII on QR Scans)
                   </p>
                   <p>
                     Campus Tag is architected specifically to shield students, university researchers, and faculty members from doxxing, harassment, and identity exposure. When a stranger scans your physical tag, our system renders only the non-sensitive public item description you chose to provide. Your personal email address, phone number, and physical student dorm address are strictly blocked from public view.
                   </p>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     2. Location Data Collection & Disclosure
                   </p>
                   <p>
                     Campus Tag does NOT perform continuous background location tracking or GPS beacon polling. Location coordinates are logged exclusively when an anonymous finder chooses to click "Share Current Location" or drops a pin on the Leaflet map. Location logs are retained solely for the owner's recovery purposes and are never resold or mined.
                   </p>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     3. Compliance with FERPA & Institutional Guidelines
                   </p>
                   <p>
@@ -930,19 +1082,19 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
 
               {activePolicy === 'terms' && (
                 <>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     1. Permitted Campus Usage
                   </p>
                   <p>
                     Campus Tag provides digital lost & found indexing for educational, personal, and research equipment. Users must only register equipment they own or have explicit administrative authority to tag on behalf of a university department.
                   </p>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     2. Tag Longevity Guarantee
                   </p>
                   <p>
                     Physical QR codes generated via Campus Tag will remain operational and scannable indefinitely. If an account subscription lapses, public scan pages will continue to render the recovery prompt and forward alerts without disruption.
                   </p>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     3. Prohibited Conduct
                   </p>
                   <p>
@@ -953,13 +1105,13 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
 
               {activePolicy === 'refund' && (
                 <>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     1. 14-Day Academic Refund Window
                   </p>
                   <p>
                     If Campus Tag does not fulfill your student group or lab's requirements, you may request a 100% full refund within 14 calendar days of your initial plan upgrade.
                   </p>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-[var(--ct-text-primary)]">
                     2. Cancellation Terms
                   </p>
                   <p>
@@ -969,10 +1121,10 @@ export const PublicWebsite: React.FC<PublicWebsiteProps> = ({
               )}
             </div>
 
-            <div className="pt-4 border-t border-slate-200 flex justify-end">
+            <div className="pt-4 border-t border-[var(--ct-border-subtle)] flex justify-end">
               <button
                 onClick={onClosePolicy}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer"
+                className="px-5 py-2 bg-[var(--ct-accent)] hover:bg-[var(--ct-accent-hover)] text-white font-bold rounded-[var(--ct-radius-lg)] text-[10px] cursor-pointer"
               >
                 Acknowledge & Close
               </button>
