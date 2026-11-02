@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { User, WebsiteSettings } from '../types';
-import { 
-  ShieldCheck, 
-  User as UserIcon, 
-  LogOut, 
-  LogIn, 
-  ShieldAlert, 
+import {
+  ShieldCheck,
+  User as UserIcon,
+  LogOut,
+  LogIn,
+  ShieldAlert,
   LayoutDashboard,
   Building,
   KeyRound,
@@ -17,6 +18,7 @@ import {
   ChevronRight,
   ExternalLink
 } from 'lucide-react';
+import { drawerPanel, staggerItem, tapPress } from '../components/motion';
 
 interface NavbarProps {
   settings: WebsiteSettings;
@@ -37,6 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAdminAuth,
   onLogout,
 }) => {
+  const reduced = useReducedMotion();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleMobileNavClick = (view: 'public' | 'customer' | 'admin' | 'finder') => {
@@ -58,70 +61,82 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
+  const drawerTransition = reduced ? { duration: 0 } : { type: 'spring' as const, stiffness: 320, damping: 30 };
+
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+    <header className="sticky top-0 z-50 bg-[var(--ct-bg-surface)]/90 backdrop-blur-md border-b border-[var(--ct-border-subtle)] shadow-xs transition-all">
       {/* Subtle University Accent Bar */}
-      <div className="h-1 bg-gradient-to-r from-blue-700 via-indigo-600 to-emerald-500 w-full" />
+      <div className="h-1 bg-gradient-to-r from-[var(--ct-accent)] via-indigo-600 to-emerald-500 w-full" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         {/* Brand */}
         <div className="flex items-center gap-6 shrink-0">
           <button
             onClick={() => onNavigate('public')}
-            className="flex items-center gap-3 text-left cursor-pointer group focus:outline-none"
+            className="flex items-center gap-3 text-left cursor-pointer group focus:outline-none ct-touch-target"
             title="Go to Campus Tag Homepage"
           >
             <div className="relative">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs shadow-md shadow-blue-500/25 group-hover:scale-105 group-hover:shadow-blue-500/40 transition-all duration-200">
+              <div className="w-9 h-9 rounded-[var(--ct-radius-lg)] bg-gradient-to-br from-[var(--ct-accent)] to-indigo-700 text-[var(--ct-text-inverse)] flex items-center justify-center font-black text-xs shadow-[var(--ct-shadow-sm)] shadow-blue-500/25 group-hover:scale-105 group-hover:shadow-blue-500/40 transition-all duration-200">
                 CT
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white ring-1 ring-emerald-500/30" />
             </div>
 
             <div>
-              <div className="text-sm font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors flex items-center gap-1.5">
+              <div className="text-sm font-black tracking-tight text-[var(--ct-text-primary)] group-hover:text-[var(--ct-accent-hover)] transition-colors flex items-center gap-1.5">
                 <span>{settings.appName}</span>
-                <span className="text-[9px] bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded-md font-semibold tracking-normal hidden sm:inline-block">
+                <span className="text-[9px] bg-blue-950/20 text-[var(--ct-accent-hover)] border border-blue-500/20 px-1.5 py-0.5 rounded-md font-semibold tracking-normal hidden sm:inline-block">
                   SaaS 2.4
                 </span>
               </div>
-              <div className="text-[10px] text-blue-600 font-semibold tracking-wider uppercase">
-                {settings.tagline}
+              <div className="text-[10px] text-[var(--ct-accent-hover)] font-semibold tracking-wider uppercase flex flex-wrap gap-x-1">
+                {(settings.tagline || 'Scan It to Find It').split(' ').map((word, i) => (
+                  <motion.span
+                    key={`nav-tagline-${i}`}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.28, delay: 0.04 * i, ease: [0.25, 1, 0.5, 1] }}
+                    className="inline-block"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
               </div>
             </div>
           </button>
 
           {/* Nav links on public view (Desktop) */}
           {currentView === 'public' && (
-            <div className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600">
-              <button 
-                onClick={() => handleScrollToSection('how-it-works')} 
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
+            <div className="hidden lg:flex items-center gap-6 text-xs font-semibold text-[var(--ct-text-muted)]">
+              <button
+                onClick={() => handleScrollToSection('how-it-works')}
+                className="hover:text-[var(--ct-accent-hover)] transition-colors cursor-pointer py-1 ct-touch-target"
               >
                 How It Works
               </button>
-              <button 
-                onClick={() => handleScrollToSection('features')} 
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
+              <button
+                onClick={() => handleScrollToSection('features')}
+                className="hover:text-[var(--ct-accent-hover)] transition-colors cursor-pointer py-1 ct-touch-target"
               >
                 Features
               </button>
-              <button 
-                onClick={() => handleScrollToSection('pricing')} 
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
+              <button
+                onClick={() => handleScrollToSection('pricing')}
+                className="hover:text-[var(--ct-accent-hover)] transition-colors cursor-pointer py-1 ct-touch-target"
               >
                 Pricing
               </button>
-              <button 
-                onClick={() => handleScrollToSection('future-benefits')} 
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1 flex items-center gap-1.5 text-blue-600 font-bold group"
+              <button
+                onClick={() => handleScrollToSection('future-benefits')}
+                className="hover:text-[var(--ct-accent-hover)] transition-colors cursor-pointer py-1 flex items-center gap-1.5 text-[var(--ct-accent-hover)] font-bold group ct-touch-target"
               >
                 <span>Future Benefits</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse group-hover:scale-125 transition-transform" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--ct-accent)] animate-pulse group-hover:scale-125 transition-transform" />
               </button>
-              <button 
-                onClick={() => handleScrollToSection('contact')} 
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
+              <button
+                onClick={() => handleScrollToSection('contact')}
+                className="hover:text-[var(--ct-accent-hover)] transition-colors cursor-pointer py-1 ct-touch-target"
               >
                 Support
               </button>
@@ -132,13 +147,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* View Switcher & Role Badges (Desktop) */}
         <div className="hidden md:flex items-center gap-3">
           {/* Segmented View Switcher */}
-          <div className="flex items-center bg-slate-100/90 p-1 rounded-xl text-xs font-semibold border border-slate-200/60 shadow-xs">
+          <div className="flex items-center bg-[var(--ct-bg-elevated)]/90 p-1 rounded-[var(--ct-radius-lg)] text-xs font-semibold border border-[var(--ct-border-subtle)] shadow-xs">
             <button
               onClick={() => onNavigate('public')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[var(--ct-radius-md)] transition-all cursor-pointer ct-touch-target ${
                 currentView === 'public'
-                  ? 'bg-white text-slate-900 shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[var(--ct-card-elevated)] text-[var(--ct-text-primary)] shadow-xs font-bold'
+                  : 'text-[var(--ct-text-secondary)] hover:text-[var(--ct-text-primary)]'
               }`}
             >
               Public Site
@@ -146,10 +161,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={() => onNavigate('customer')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-[var(--ct-radius-md)] transition-all cursor-pointer flex items-center gap-1.5 ct-touch-target ${
                 currentView === 'customer'
-                  ? 'bg-white text-blue-600 shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[var(--ct-card-elevated)] text-[var(--ct-accent-hover)] shadow-xs font-bold'
+                  : 'text-[var(--ct-text-secondary)] hover:text-[var(--ct-text-primary)]'
               }`}
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
@@ -158,10 +173,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={() => onNavigate('admin')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-[var(--ct-radius-md)] transition-all cursor-pointer flex items-center gap-1.5 ct-touch-target ${
                 currentView === 'admin'
                   ? 'bg-red-600 text-white shadow-xs font-bold'
-                  : 'text-red-700 hover:text-red-900 hover:bg-red-50/50'
+                  : 'text-red-600 hover:text-[var(--ct-status-critical)] hover:bg-red-900/20'
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5" />
@@ -171,15 +186,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User Session / Auth Controls */}
           {currentUser ? (
-            <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200/90 text-left">
-                <div className={`w-7 h-7 rounded-lg text-white flex items-center justify-center font-bold text-xs shadow-xs ${
-                  currentUser.role === 'super_admin' ? 'bg-red-600' : 'bg-blue-600'
+            <div className="flex items-center gap-2 pl-2 border-l border-[var(--ct-border-subtle)]">
+              <div className="flex items-center gap-2 px-2.5 py-1 rounded-[var(--ct-radius-lg)] bg-[var(--ct-bg-elevated)]/90 border border-[var(--ct-border-subtle)] text-left">
+                <div className={`w-7 h-7 rounded-[var(--ct-radius-md)] text-white flex items-center justify-center font-bold text-xs shadow-xs ${
+                  currentUser.role === 'super_admin' ? 'bg-red-600' : 'bg-[var(--ct-accent)]'
                 }`}>
                   {currentUser.fullName ? currentUser.fullName[0] : 'U'}
                 </div>
                 <div className="hidden lg:block">
-                  <div className="text-xs font-bold text-slate-900 truncate max-w-[120px]">
+                  <div className="text-xs font-bold text-[var(--ct-text-primary)] truncate max-w-[120px]">
                     {currentUser.fullName}
                   </div>
                   <div className="text-[9px] font-semibold uppercase tracking-wider flex items-center gap-1">
@@ -189,8 +204,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                         SUPER ADMIN
                       </span>
                     ) : (
-                      <span className="text-blue-600 font-bold flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                      <span className="text-[var(--ct-accent-hover)] font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--ct-accent)]" />
                         CUSTOMER
                       </span>
                     )}
@@ -201,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onLogout}
                 title="Sign out of current account"
-                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer interactive-btn border border-transparent hover:border-red-100"
+                className="p-2 text-[var(--ct-text-muted)] hover:text-[var(--ct-status-critical)] hover:bg-red-900/20 rounded-[var(--ct-radius-lg)] transition-all cursor-pointer interactive-btn border border-transparent hover:border-red-100/30 ct-touch-target"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -210,16 +225,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onOpenCustomerAuth('login')}
-                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-blue-500/20 cursor-pointer interactive-btn"
+                className="ct-btn-primary px-4 py-1.5 text-[10px]"
               >
                 Sign In
               </button>
               <button
                 onClick={onOpenAdminAuth}
                 title="Super Admin Login Portal"
-                className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer border border-slate-200 interactive-btn"
+                className="p-1.5 text-[var(--ct-text-muted)] hover:text-red-600 hover:bg-red-900/20 rounded-[var(--ct-radius-lg)] transition-all cursor-pointer border border-[var(--ct-border-subtle)] interactive-btn ct-touch-target"
               >
-                <KeyRound className="w-4 h-4 text-slate-600" />
+                <KeyRound className="w-4 h-4 text-[var(--ct-text-muted)]" />
               </button>
             </div>
           )}
@@ -231,9 +246,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => handleMobileNavClick(currentUser.role === 'super_admin' ? 'admin' : 'customer')}
-                className={`w-7 h-7 rounded-lg text-white flex items-center justify-center font-bold text-xs ${
-                  currentUser.role === 'super_admin' ? 'bg-red-600' : 'bg-blue-600'
-                }`}
+                className={`w-7 h-7 rounded-[var(--ct-radius-md)] text-white flex items-center justify-center font-bold text-xs ${
+                  currentUser.role === 'super_admin' ? 'bg-red-600' : 'bg-[var(--ct-accent)]'
+                } ct-touch-target`}
               >
                 {currentUser.fullName ? currentUser.fullName[0] : 'U'}
               </button>
@@ -241,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           ) : (
             <button
               onClick={() => onOpenCustomerAuth('login')}
-              className="px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold"
+              className="ct-btn-primary px-2.5 py-1 text-[10px]"
             >
               Sign In
             </button>
@@ -249,49 +264,63 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors"
+            className="p-2 text-[var(--ct-text-secondary)] hover:text-[var(--ct-text-primary)] hover:bg-[var(--ct-bg-elevated)] rounded-[var(--ct-radius-lg)] border border-[var(--ct-border-subtle)] transition-colors ct-touch-target"
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              style={{ borderRadius: '0.5rem' }}
+              className="p-1.5 shrink-0"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </motion.button>
           </button>
         </div>
       </div>
 
       {/* Mobile Navigation Drawer / Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-lg border-b border-slate-200 shadow-xl animate-slide-down px-4 py-4 space-y-4">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          variants={drawerPanel}
+          transition={drawerTransition}
+          className="md:hidden bg-[var(--ct-bg-surface)]/95 backdrop-blur-lg border-b border-[var(--ct-border-subtle)] shadow-[var(--ct-shadow-lg)] px-4 py-4 space-y-4"
+        >
           {/* Quick Role View Switcher in Mobile */}
           <div className="space-y-1.5">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
+            <div className="text-[10px] font-bold text-[var(--ct-text-muted)] uppercase tracking-wider px-1">
               Switch Workspace View
             </div>
-            <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+            <div className="grid grid-cols-3 gap-1.5 bg-[var(--ct-bg-elevated)] p-1 rounded-[var(--ct-radius-lg)] text-[10px] font-semibold">
               <button
                 onClick={() => handleMobileNavClick('public')}
-                className={`py-2 px-1 rounded-lg text-center transition-all ${
+                className={`py-2 px-1 rounded-[var(--ct-radius-md)] text-center transition-all ct-touch-target ${
                   currentView === 'public'
-                    ? 'bg-white text-slate-900 shadow-xs font-bold'
-                    : 'text-slate-600'
+                    ? 'bg-[var(--ct-card-elevated)] text-[var(--ct-text-primary)] shadow-xs font-bold'
+                    : 'text-[var(--ct-text-secondary)]'
                 }`}
               >
                 Public Site
               </button>
               <button
                 onClick={() => handleMobileNavClick('customer')}
-                className={`py-2 px-1 rounded-lg text-center transition-all ${
+                className={`py-2 px-1 rounded-[var(--ct-radius-md)] text-center transition-all ct-touch-target ${
                   currentView === 'customer'
-                    ? 'bg-white text-blue-600 shadow-xs font-bold'
-                    : 'text-slate-600'
+                    ? 'bg-[var(--ct-card-elevated)] text-[var(--ct-accent-hover)] shadow-xs font-bold'
+                    : 'text-[var(--ct-text-secondary)]'
                 }`}
               >
                 Customer
               </button>
               <button
                 onClick={() => handleMobileNavClick('admin')}
-                className={`py-2 px-1 rounded-lg text-center transition-all ${
+                className={`py-2 px-1 rounded-[var(--ct-radius-md)] text-center transition-all ct-touch-target ${
                   currentView === 'admin'
                     ? 'bg-red-600 text-white shadow-xs font-bold'
-                    : 'text-red-700'
+                    : 'text-red-600'
                 }`}
               >
                 Super Admin
@@ -300,63 +329,59 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Public Sections */}
-          <div className="pt-2 border-t border-slate-100 space-y-1">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1 mb-1">
+          <div className="pt-2 border-t border-[var(--ct-border-subtle)] space-y-1">
+            <div className="text-[10px] font-bold text-[var(--ct-text-muted)] uppercase tracking-wider px-1 mb-1">
               Platform Navigation
             </div>
-            <button
-              onClick={() => handleScrollToSection('how-it-works')}
-              className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg flex items-center justify-between"
-            >
-              <span>How It Works</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-            <button
-              onClick={() => handleScrollToSection('features')}
-              className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg flex items-center justify-between"
-            >
-              <span>Security & Privacy Features</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-            <button
-              onClick={() => handleScrollToSection('pricing')}
-              className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg flex items-center justify-between"
-            >
-              <span>Campus Plans & Pricing</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-            <button
-              onClick={() => handleScrollToSection('future-benefits')}
-              className="w-full text-left px-3 py-2 text-xs font-bold text-blue-600 bg-blue-50/50 hover:bg-blue-50 rounded-lg flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span>Future Use & Campus Benefits</span>
-              </span>
-              <span className="text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded-full font-bold">NEW</span>
-            </button>
-            <button
-              onClick={() => handleScrollToSection('contact')}
-              className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg flex items-center justify-between"
-            >
-              <span>Campus Helpdesk & Support</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            </button>
+            {[
+              { id: 'how-it-works', label: 'How It Works' },
+              { id: 'features', label: 'Security & Privacy Features' },
+              { id: 'pricing', label: 'Campus Plans & Pricing' },
+              { id: 'future-benefits', label: 'Future Use & Campus Benefits', isNew: true },
+              { id: 'contact', label: 'Campus Helpdesk & Support' },
+            ].map((section) => (
+              <motion.div
+                key={section.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: 0.05 * ['how-it-works','features','pricing','future-benefits','contact'].indexOf(section.id) }}
+                className="my-1"
+              >
+                <button
+                  onClick={() => handleScrollToSection(section.id)}
+                  className={`w-full text-left px-3 py-2 text-[10px] font-semibold rounded-[var(--ct-radius-md)] flex items-center justify-between ct-touch-target ${
+                    section.id === 'future-benefits'
+                      ? 'text-[var(--ct-accent-hover)] bg-blue-950/10 hover:bg-blue-900/20'
+                      : 'text-[var(--ct-text-secondary)] hover:bg-[var(--ct-bg-elevated)]'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    {section.id === 'future-benefits' && <Sparkles className="w-3.5 h-3.5 text-[var(--ct-accent-hover)]" />}
+                    {section.label}
+                  </span>
+                  {section.id !== 'future-benefits' ? (
+                    <ChevronRight className="w-3.5 h-3.5 text-[var(--ct-text-muted)]" />
+                  ) : (
+                    <span className="text-[9px] bg-[var(--ct-accent)] text-white px-1.5 py-0.5 rounded-full font-bold">NEW</span>
+                  )}
+                </button>
+              </motion.div>
+            ))}
           </div>
 
           {/* Account Footer in Mobile */}
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+          <div className="pt-2 border-t border-[var(--ct-border-subtle)] flex items-center justify-between">
             {currentUser ? (
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-2">
-                  <div className={`w-8 h-8 rounded-lg text-white flex items-center justify-center font-bold text-xs ${
-                    currentUser.role === 'super_admin' ? 'bg-red-600' : 'bg-blue-600'
+                  <div className={`w-8 h-8 rounded-[var(--ct-radius-md)] text-white flex items-center justify-center font-bold text-xs ${
+                    currentUser.role === 'super_admin' ? 'bg-red-600' : 'bg-[var(--ct-accent)]'
                   }`}>
                     {currentUser.fullName ? currentUser.fullName[0] : 'U'}
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-900">{currentUser.fullName}</div>
-                    <div className="text-[10px] text-slate-500 font-semibold uppercase">{currentUser.role}</div>
+                    <div className="text-xs font-bold text-[var(--ct-text-primary)]">{currentUser.fullName}</div>
+                    <div className="text-[10px] text-[var(--ct-text-muted)] font-semibold uppercase">{currentUser.role}</div>
                   </div>
                 </div>
                 <button
@@ -364,7 +389,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className="px-3 py-1.5 text-xs text-red-600 font-bold hover:bg-red-50 rounded-lg flex items-center gap-1"
+                  className="px-3 py-1.5 text-[10px] text-red-600 font-bold hover:bg-red-900/20 rounded-[var(--ct-radius-md)] flex items-center gap-1 ct-touch-target transition-colors"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign Out</span>
@@ -377,7 +402,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setMobileMenuOpen(false);
                     onOpenCustomerAuth('login');
                   }}
-                  className="py-2 bg-blue-600 text-white rounded-xl text-xs font-bold text-center"
+                  className="ct-btn-primary py-2 text-[10px]"
                 >
                   Customer Sign In
                 </button>
@@ -386,7 +411,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setMobileMenuOpen(false);
                     onOpenAdminAuth();
                   }}
-                  className="py-2 border border-red-200 text-red-600 bg-red-50/50 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-1"
+                  className="py-2 border border-red-600/30 text-red-600 bg-red-900/10 rounded-[var(--ct-radius-md)] text-[10px] font-bold text-center flex items-center justify-center gap-1 ct-touch-target transition-colors"
                 >
                   <KeyRound className="w-3.5 h-3.5" />
                   <span>Admin Login</span>
@@ -394,7 +419,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
     </header>
   );
